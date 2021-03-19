@@ -4,6 +4,7 @@ import 'package:local_notifications/bloc/notifcations_bloc.dart';
 import 'package:local_notifications/config/notifications_methods.dart';
 import 'package:local_notifications/provider/provider_notifcations.dart';
 import 'package:local_notifications/screens/second_sreen.dart';
+import 'package:websocket_manager/websocket_manager.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -11,6 +12,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final channel = WebsocketManager("ws://192.168.100.154:8000/ws");
+  //final Stream _stream=Stream();
+
   NotificationsBloc _notificationsBloc;
   @override
   void initState() {
@@ -19,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
         BlocProviderNotications.of<NotificationsBloc>(context).bloc;
     _configureDidReceiveLocalNotificationSubject();
     _configureSelectNotificationSubject();
+    channel.connect();
   }
 
   void _configureDidReceiveLocalNotificationSubject() {
@@ -68,16 +73,33 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: RaisedButton(
-          child: Text("Notified"),
-          onPressed: () => _notificationsBloc
-              .didReceiveLocalNotificationSubject(ReceivedNotification(
-            id: 1,
-            title: 'title',
-            body: 'body',
-            payload: 'payload',
-          )),
-        ),
+        child: StreamBuilder(
+            stream: null,
+            builder: (_, snapshot) {
+              channel.onMessage((dynamic msg) => print("respoonse: $msg"));
+              if (snapshot.hasData) {
+                _notificationsBloc
+                    .didReceiveLocalNotificationSubject(ReceivedNotification(
+                  id: 1,
+                  title: snapshot.data.toString(),
+                  body: 'body',
+                  payload: 'payload',
+                ));
+                print(snapshot.data);
+                return Text(snapshot.data);
+              }
+              return CircularProgressIndicator();
+              // return RaisedButton(
+              //   child: Text("Notified"),
+              // onPressed: () => _notificationsBloc
+              //     .didReceiveLocalNotificationSubject(ReceivedNotification(
+              //   id: 1,
+              //   title: 'title',
+              //   body: 'body',
+              //   payload: 'payload',
+              // )),
+              // );
+            }),
       ),
     );
   }

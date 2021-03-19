@@ -11,7 +11,7 @@ class AppNotifications extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProviderNotications(
-      bloc: NotificationsBloc(configNotifications),
+      bloc: NotificationsBloc(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'App Notifications',

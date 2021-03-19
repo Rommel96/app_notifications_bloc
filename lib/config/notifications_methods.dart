@@ -40,16 +40,4 @@ class ConfigNotifications {
       _bloc.selectNotificationSubject(payload);
     });
   }
-
-  Future<void> showNotification() async {
-    final androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'your channel id', 'your channel name', 'your channel description',
-        importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
-    final iOSPlatformChannelSpecifics = IOSNotificationDetails();
-    final platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(
-        0, 'plain title', 'plain body', platformChannelSpecifics,
-        payload: 'item x');
-  }
 }
